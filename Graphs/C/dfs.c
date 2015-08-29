@@ -16,29 +16,22 @@ int main (int carg, char **argv)
   uint8 *G_State; // Graph State (Visited)
 
   printf(" Grafos everywhere \n");
-  printf(" Insert the number of vertices  \n");
-  scanf("%u", &v);
+  printf(" Insert the number of vertices and Edges  \n");
+  scanf("%u %u", &v, &e);
 
   if(v >= -1)
     return -1;
 
-  printf("Initializing G \n");
   if(initG(&G,&G_State,v) == -1 )
     return -1;
 
-  printf(" Insert the number of edges \n");
-  scanf("%u",&e);
-
   for( i=0; i < e ; i++)
   {
-    printf(" Insert X \n");
-    scanf("%u",&x);
-    printf(" Insert Y \n");
-    scanf("%u",&y);
+    printf(" Insert X Y \n");
+    scanf("%u %u",&x, &y);
     if(insert(G,x,y) == -1)
        return -1;
   }
-
   printf("DFS\n");
   dfs(G, G_State, 0);
 }
@@ -47,7 +40,7 @@ int initG(ptr_node *G, uint8 **G_State,unsigned int vertices)
 {
     int i;
     *G =  malloc(sizeof(Node) * vertices);
-    if(*G == NULL){
+    if(G == NULL){
         printf("Can't allocate memory \n");
         return -1;
     }
@@ -70,19 +63,15 @@ int initG(ptr_node *G, uint8 **G_State,unsigned int vertices)
 
 int insert(ptr_node ptrG, int x, int y)
 {
-    if(INVALID != (ptrG +x)->y)
-    {
-        ptr_node tmp = malloc(sizeof(Node));
-        if(tmp == NULL){
-            printf("Can't allocate memory \n");
-            return -1;
-        }
-        *tmp = *(ptrG+x);
+    ptr_node tmp = malloc(sizeof(Node));
+    if(tmp == NULL){
+        printf("Can't allocate memory \n");
+        return -1;
+    }
+    *tmp = *(ptrG+x);
 
-        (ptrG+x)->y = y;
-        (ptrG+x)->next_node = tmp;
-    }else
-        (ptrG+x)->y = y;
+    (ptrG+x)->y = y;
+    (ptrG+x)->next_node = tmp;
 
     return 0;
 }
