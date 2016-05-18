@@ -6,9 +6,10 @@ typedef struct list {
 	struct list *next;
 }list,*link;
 
-void insertar(list **l, int elemento);
+int insertarHead(list **l, int elemento);
+int insertarTail(list **l, int elemento);
 link buscar(list *l, int elemento);
-void borrar(list **l, int elemento);
+int borrar(list **l, int elemento);
 link predecesor(list *l, int elemento);
 void imprimirLinkedList(list *l);
 /* Lista Circular */
