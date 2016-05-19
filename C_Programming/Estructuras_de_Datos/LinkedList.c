@@ -130,7 +130,7 @@ int main (int argc, char **argv)
 	int i;
 	int opcion;
 	list *LinkedList = NULL;
-	list *CircularLinkedList = NULL;
+	//list *CircularLinkedList = NULL;
 	do
 	{
 		opcion = printMenu();
@@ -460,7 +460,6 @@ void imprimirLinkedList(list *l)
 {
 	if(l) {
 		link tmpList;
-		int i = 0;
 		printf("INICIO:");
 		for (tmpList = l; tmpList != NULL; tmpList = tmpList->next)
 			printf("%d->",tmpList->elemento);
