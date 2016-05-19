@@ -1,6 +1,13 @@
 #include "LinkedList.h"
-#define MAX_BUFFER 100
 
+#ifdef _WIN32
+#define CLEAR_SCREEN system("cls")
+#else
+#define CLEAR_SCREEN system("clear")
+#endif
+
+#define MAX_BUFFER 100
+typedef unsigned char bool;
 char buffer[MAX_BUFFER];
 
 int validarEntrada(const char *input)
@@ -82,6 +89,7 @@ int printMenu()
 {
 	int opcion = -1;
 	do{
+		CLEAR_SCREEN;
 		printf("======Listas Enlazadas=====\n");
 		printf("\tMenu:\n");
 		printf("\t1.- Lista Enlazada\n");
@@ -99,6 +107,8 @@ int printMenuLista(const char *titulo)
 {
 	int opcion = -1;
 	do{
+		CLEAR_SCREEN;
+		system("clear");
 		printf("====%s====\n",titulo);
 		printf("\t 1.- Insertar Manualmente\n");
 		printf("\t 2.- Insertar Aleatoriamente\n");
@@ -119,58 +129,111 @@ int main (int argc, char **argv)
 {
 	int i;
 	int opcion;
+	list *LinkedList = NULL;
+	list *CircularLinkedList = NULL;
 	do
 	{
 		opcion = printMenu();
 		switch(opcion)
 		{
-			case 1:
+			case 1: //Lista Enlazada
 			{
-				int opc = printMenuLista("Lista Ligada");
-				switch(opc)
+				int opc;
+				do
 				{
-					case 1:
+					opc = printMenuLista("Lista Ligada");
+					switch(opc)
 					{
-						int numElements;
-						printf("Numeros de Elementos a insertar: ");
-						fgets(buffer,MAX_BUFFER,stdin);
-						if(!validarEntrada(buffer)) {
-							numElements = atoi(buffer);
-							printf("Insercion Manual\n");
-							list *myList = NULL;
-							for (i = 0; i < numElements; ++i){
-								int elem = 0;
+						case 1:
+						{
+							int numElements;
+							bool InsTail = 0;
+							printf("=========Insercion Manual=========\n");
+							printf("Numeros de Elementos a insertar: ");
+							fgets(buffer,MAX_BUFFER,stdin);
+							if(!validarEntrada(buffer)) {
+								numElements = atoi(buffer);
+								printf("Insertar atras de la lista:[1]Yes [2]No \n");
 								fgets(buffer,MAX_BUFFER,stdin);
 								if(!validarEntrada(buffer))
-									elem = atoi(buffer);
-								insertarHead(&myList,elem);
+									InsTail = atoi(buffer) >= 1 ? 1 : 0;
+								for (i = 0; i < numElements; ++i){
+									int elem = 0;
+									printf("Captura el %d elemento: ", i);
+									fgets(buffer,MAX_BUFFER,stdin);
+									if(!validarEntrada(buffer))
+										elem = atoi(buffer);
+									if(InsTail)
+										insertarTail(&LinkedList, elem);
+									else
+										insertarHead(&LinkedList, elem);
+								}
 							}
-						}
-					}break;
-					case 2:
-					{
-						printf("Insercion Aleatoria\n");
-					}break;
-					case 3:
-					{
-						printf("Buscar\n");
-					}break;
-					case 4:
-					{
-						printf("Imprimir\n");
-					}break;
-					case 5:
-					{
-						printf("Revertir\n");
-					}break;
-					case 6:
-					{
-						printf("Regresar\n");
-					}break;
+						}break;
 
-					default:
-						break;
-				}
+						case 2:
+						{
+							int numElements;
+							printf("========Insercion Aleatoria========\n");
+							printf("Numeros de Elementos a insertar: ");
+							fgets(buffer,MAX_BUFFER,stdin);
+							if(!validarEntrada(buffer)) {
+								numElements = atoi(buffer);
+								for(i = 0; i < numElements; ++i) {
+									int ramdomNumber = rand() % 1000;
+									printf("Insertando %d\n",ramdomNumber);
+									insertarHead(&LinkedList, ramdomNumber);
+								}
+								printf("\nPresione cualquier tecla para continuar \n");
+								getchar();
+							}
+						}break;
+
+						case 3:
+						{
+							printf("=================Buscar=================\n");
+							fgets(buffer,MAX_BUFFER,stdin);
+							if(!validarEntrada(buffer)) {
+								list *l = buscar(LinkedList, atoi(buffer));
+								if(l)
+									printf("Elemento encontrado %d\n", l->elemento);
+								else
+									printf("Elemento no encontrado\n");
+							}else {
+								printf("Dato invalido\n");
+							}
+							printf("Presiona cualquier tecla para continuar\n");
+							getchar();
+						}break;
+
+						case 4:
+						{
+							printf("============Imprimir=============\n\n");
+							imprimirLinkedList(LinkedList);
+							printf("\nPresione cualquier tecla para continuar \n");
+							getchar();
+						}break;
+						case 5:
+						{
+							printf("==============Revertir===================\n");
+							printf("Lista antes de revertir: \n");
+							imprimirLinkedList(LinkedList);
+							LinkedList = revertir(LinkedList);
+							printf("Lista despues de revertir: \n");
+							imprimirLinkedList(LinkedList);
+							printf("\nPresione cualquier tecla para continuar \n");
+							getchar();
+						}break;
+						case 6:
+						{
+							printf("Regresar\n");
+							opc = 6;
+						}break;
+
+						default:
+							break;
+					}
+				}while(opc != 6);
 			}break;
 
 			case 2:
@@ -189,6 +252,7 @@ int main (int argc, char **argv)
 		}
 	}while(opcion != 3);
 
+	/* TODO(Xerof): remove this shit
 	list *myList = NULL;
 	list *CircleList = (list *) calloc(1,sizeof(list));
 	CircleList->next = CircleList;
@@ -199,13 +263,15 @@ int main (int argc, char **argv)
 		insertarCircular(&CircleList,i);
 	}
 
-	imprimirListaCircular(CircleList);
+	//imprimirListaCircular(CircleList);
 
-	imprimirLinkedList(myList);
-	borrar(&myList, 20);
-	insertarTail(&myList, 55);
-	insertarHead(&myList, 99);
-	imprimirLinkedList(myList);
+	//imprimirLinkedList(myList);
+	//borrar(&myList, 20);
+	//insertarTail(&myList, 55);
+	//insertarHead(&myList, 99);
+	//myList = revertir(myList);
+	//imprimirLinkedList(myList);*/
+
 	return EXIT_SUCCESS;
 }
 /*==============================================
@@ -235,7 +301,7 @@ int insertarHead(list **l, int elemento)
 /*==============================================
  | FUNCION: insertarTail                        |
  | ARGUMENTOS:                                  |
- |            list *l - Lista en la cual buscar |
+ |            list *l - Lista a la cual insertar|
  |            int elemento - elemento a insertar|
  | DESCRIPCION:                                 |
  |             Inserta el elemento en la cola   |
@@ -255,9 +321,14 @@ int insertarTail(list **l, int elemento)
 		;
 
 	link tmpList = (list *) malloc(sizeof(list));
+	if (tmpList == NULL)
+		return 1;
+
 	tmpList->elemento = elemento;
 	tmpList->next = indice->next;
 	indice->next = tmpList;
+
+	return 0;
 }
 /*==============================================
  | FUNCION: buscar                              |
@@ -272,7 +343,6 @@ int insertarTail(list **l, int elemento)
  ===============================================*/
 link buscar(list *l, int elemento)
 {
-	printf("%s\n",__func__);
 	if(l == NULL) {
 		return(NULL);
 	}
@@ -354,6 +424,30 @@ link predecesor(list *l, int elemento)
 }
 /*==============================================
  | FUNCION:                                     |
+ |         REVERTIR                             |
+ | ARGUMENTOS:                                  |
+ |            list *l - Lista a invertir        |
+ | DESCRIPCION:                                 |
+ |             Invierte los links de la lista   |
+ | RETURN:                                      |
+ |        NONE                                  |
+ ===============================================*/
+link revertir(list *l)
+{
+	link tmp, y = l, r = 0;
+
+	while(y != NULL)
+	{
+		tmp = y->next;
+		y->next = r;
+		r = y;
+		y = tmp;
+	}
+
+	return r;
+}
+/*==============================================
+ | FUNCION:                                     |
  |         IMPRIMIRLINKEDLIST                   |
  | ARGUMENTOS:                                  |
  |            list *l - Lista a imprimir        |
@@ -367,10 +461,10 @@ void imprimirLinkedList(list *l)
 	if(l) {
 		link tmpList;
 		int i = 0;
-		printf("Inicio:");
+		printf("INICIO:");
 		for (tmpList = l; tmpList != NULL; tmpList = tmpList->next)
-		printf("%d->",tmpList->elemento);
-		printf("Fin\n");
+			printf("%d->",tmpList->elemento);
+		printf("FINAL\n");
 	} else {
 		printf("NULL\n");
 	}
