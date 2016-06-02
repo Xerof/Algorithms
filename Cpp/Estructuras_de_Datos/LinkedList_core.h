@@ -4,30 +4,43 @@
 #include "LinkedList.h"
 
 template <class T>
-void LinkedList<T>::add(T data)
+void LinkedList<T>::push_front(const T& data)
 {
 	Node *tmp = new Node(data);
 	if(!tmp)
+	{
 		std::cout<<"No Memory left"<< std::endl;
+		return;
+	}
 
+	if(isEmpty())
+	{
+		tail = tmp;
+	}
 	tmp->next = head;
 	head = tmp;
 	++numElements;
 }
 
 template <class T>
-T LinkedList<T>::peek()
+T LinkedList<T>::peek_front()
 {
 	return head->data;
 }
 
 template <class T>
-T LinkedList<T>::get(void)
+T LinkedList<T>::peek_back()
+{
+	return tail->data;
+}
+
+template <class T>
+T LinkedList<T>::pop_front(void)
 {
 	if(isEmpty())
 	{
 		std::cout << "Trying to get items from Empty List" << std::endl;
-		return NULL;
+		return T();
 	}
 
 	Node *tmp = head;
@@ -39,20 +52,41 @@ T LinkedList<T>::get(void)
 	numElements--;
 	return value;
 }
+template <class T>
+T LinkedList<T>::pop_back()
+{
+	if(isEmpty())
+	{
+		std::cout << "Trying to get items from Empty List" << std::endl;
+		return T();
+	}
+
+	auto *x = head;
+	auto *tmp = tail;
+	auto val = tail->data;
+
+	while(x->next != tail)
+		x = x->next;
+
+	tail=x;
+	tail->next = nullptr;
+	free(tmp);
+	return val;
+}
 
 template <class T>
-T LinkedList<T>::get(int index)
+T LinkedList<T>::getAt(const int index)
 {
 	Node *x = head;
 	if(index > numElements)
 	{
 		std::cout<< "Index: " << index << "Is greater than the num of elements" <<std::endl;
-		return NULL;
+		return T();
 	}
 	if(isEmpty())
 	{
 		std::cout << "Trying to get items from Empty List" << std::endl;
-		return NULL;
+		return T();
 	}
 
 	for(int i = 0; i < numElements; ++i)
@@ -66,24 +100,42 @@ T LinkedList<T>::get(int index)
 	}
 
 	std::cout << "Element is not in the LinkedList" << std::endl;
-	return NULL;
+	return T();
 }
 
 template <class T>
 bool LinkedList<T>::isEmpty(void)
 {
-	return (head == NULL)? true : false;
+	return (head == NULL);
 }
 
 template <class T>
-void LinkedList<T>::addToTail(T data)
+void LinkedList<T>::push_back(const T &data)
 {
 	Node *tmp = new Node(data);
 	Node *x = head;
 
-	while(x->next != NULL)
-		x = x->next;
+	if(isEmpty())
+	{
+		tail = tmp;
+		head = tail;
+		return;
+	}
 
-	x->next = tmp;
+	tail->next = tmp;
+	tail = tmp;
+}
+
+template <class T>
+std::ostream& operator <<(std::ostream& is, const LinkedList<T>& l)
+{
+	auto *x = l.head;
+
+	while(x){
+		is<<x->data<<" ";
+		x= x->next;
+	}
+
+	return is;
 }
 #endif
